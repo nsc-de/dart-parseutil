@@ -1,0 +1,17 @@
+name: parseutil
+version: 0.1.0
+
+homepage: https://nsc-de.github.io/dart-parseutil/
+repository: https://github.com/nsc-de/dart-parseutil
+issue_tracker: https://github.com/nsc-de/dart-parseutil/issues
+documentation: https://miniminelp.github.io/dart-parseutil/doc/api/index.html
+description: Utility library for parsing and manipulating strings. Specifically designed for writing parsers.
+
+environment:
+  sdk: '>=2.16.0 <3.0.0'
+
+dependencies:
+  ansicolor: ^2.0.1
+
+dev_dependencies:
+  lints: ^1.0.0
