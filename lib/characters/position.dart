@@ -97,7 +97,7 @@ class PositionMaker implements PositionMap, PositionMarker {
   @override
   final CharacterSource source;
 
-  PositionMaker(this._index, this._line, this._column, this.source);
+  PositionMaker(this.source, [this._index = 0, this._line = 1, this._column = 1]);
 
   @override
   int get column => _column;
