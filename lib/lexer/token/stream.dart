@@ -2,7 +2,7 @@ import 'package:parseutil/characters/position.dart';
 import 'package:parseutil/lexer/token/token.dart';
 
 /// A [TokenInputStream] provides the [Token]s for a Parser. It is
-/// created by the [io.github.shakelang.shake.lexer.Lexer]
+/// created by a lexer
 abstract class TokenInputStream<TT extends TokenType, T extends Token<TT>> {
 
   /// The source (mostly filename) of the [TokenInputStream]
@@ -107,4 +107,112 @@ abstract class TokenInputStream<TT extends TokenType, T extends Token<TT>> {
   bool peekHasValue([int offset = 1]) {
     return peekValue(offset) != null;
   }
+}
+
+/// A [TokenBasedTokenInputStream] provides the [Token]s for a Parser. It is
+/// created by a lexer
+class TokenBasedTokenInputStream<TT extends TokenType, T extends Token<TT>> extends TokenInputStream<TT, T> {
+
+  /// The tokenTypes that are contained in the [TokenBasedTokenInputStream]
+  final List<T> tokens;
+
+  /// Map to resolve the column / line of an index.
+  /// This is useful for error-generation.
+  final PositionMap map;
+
+  TokenBasedTokenInputStream(this.tokens, this.map);
+
+  get source => map.source.location;
+
+  /// Get a specific token from the [DataBasedTokenInputStream]
+  ///
+  /// @param position the position to get
+  /// @return the token at the given position
+  T get(int position) {
+    return tokens[position];
+  }
+
+  /// Get the type of specific token from the [DataBasedTokenInputStream] by its position
+  ///
+  /// @param position the position to get
+  /// @return the token at the given position
+  TT getType(int position) {
+    return get(position).type;
+  }
+
+  /// Get the start of specific token from the [DataBasedTokenInputStream] by its position
+  ///
+  /// @param position the position to get
+  /// @return the token at the given position
+  int getStart(int position) {
+    return get(position).start;
+  }
+
+  /// Get the end of specific token from the [DataBasedTokenInputStream] by it's position
+  ///
+  /// @param position the position to get
+  /// @return the token at the given position
+  int getEnd(int position) {
+    return get(position).end;
+  }
+
+  /// Get the value of specific token from the [DataBasedTokenInputStream] by it's position
+  ///
+  /// @param position the position to get
+  /// @return the token at the given position
+  String? getValue(int position) {
+    return get(position).value;
+  }
+
+  /// Check if specific token from the [DataBasedTokenInputStream] has a value (by it's position)
+  ///
+  /// @param position the position to get
+  /// @return the token at the given position
+  bool getHasValue(int position) {
+    return getValue(position) != null;
+  }
+
+  @override
+  int position = -1;
+
+  @override
+  bool has(int num) {
+    return position + num < tokens.length;
+  }
+
+  @override
+  T next() {
+    if(!hasNext()) "Not enough tokens left";
+    return tokens[++position];
+  }
+
+  @override
+  void skip([int amount = 1]) {
+    if(!has(amount)) throw "Not enough tokens left";
+    position += amount;
+  }
+
+  @override
+  bool hasNext() {
+    return has(1);
+  }
+
+  @override
+  T peek([int offset = 1]) {
+    if(!has(offset)) throw "Not enough tokens left";
+    return tokens[position + offset];
+  }
+
+  @override
+  get actual => tokens[position];
+
+  void reset() {
+    position = -1;
+  }
+
+  @override
+  String toString() {
+    return "TokenBasedTokenInputStream(source='$source', tokens=$tokens, position=$position)";
+  }
+
 }
